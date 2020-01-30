@@ -38,18 +38,25 @@ public class CozinhaController {
 	@GetMapping("/{cozinhaId}")
 	public ResponseEntity<Cozinha> buscar(@PathVariable("cozinhaId") Long cozinhaId) {
 		Cozinha cozinha = cozinhaRepository.buscar(cozinhaId);
+		
+		if (cozinha != null) {
+			return ResponseEntity.ok(cozinha);
+		}
+		// return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		return ResponseEntity.notFound().build();// Atalho para linha acima
+		
 		// return ResponseEntity.status(HttpStatus.OK).body(cozinha);
 		// return ResponseEntity.ok(cozinha);// Esta linha é um atalho para a linha acima
-		
+		/*
 		/**
 		 * Exemplo de status 302
 		 */
-		HttpHeaders headers = new HttpHeaders();
+		/*HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.LOCATION, "http://api.algafood.local:8080/cozinhas");
 		return ResponseEntity
 						.status(HttpStatus.FOUND)
 						.headers(headers)
-						.build();
+						.build();*/
 	}
 	
 }
