@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.algaworks.algafood.api.model.CozinhasXmlWrapper;
 import com.algaworks.algafood.domain.model.Cozinha;
 import com.algaworks.algafood.domain.repository.CozinhaRepository;
+import com.algaworks.algafood.domain.service.CadastroCozinhaService;
 
 @RestController
 @RequestMapping("/cozinhas")
@@ -30,7 +31,10 @@ public class CozinhaController {
 	@Autowired
 	private CozinhaRepository cozinhaRepository;
 
-	@GetMapping//(produces = MediaType.APPLICATION_JSON_VALUE)
+	@Autowired
+	private CadastroCozinhaService cadastroCozinha;
+
+	@GetMapping // (produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<Cozinha> listar() {
 		return cozinhaRepository.listar();
 	}
@@ -39,24 +43,23 @@ public class CozinhaController {
 	public CozinhasXmlWrapper listarXml() {
 		return new CozinhasXmlWrapper(cozinhaRepository.listar());
 	}
-	
-	// @ResponseStatus(HttpStatus.CREATED) Exemplo da alteração do código de retorno do serviço (200,2001,400,etc)
+
+	// @ResponseStatus(HttpStatus.CREATED) Exemplo da alteração do código de retorno
+	// do serviço (200,2001,400,etc)
 	@GetMapping("/{cozinhaId}")
 	public ResponseEntity<Cozinha> buscar(@PathVariable("cozinhaId") Long cozinhaId) {
 		Cozinha cozinha = cozinhaRepository.buscar(cozinhaId);
-		
+
 		if (cozinha != null) {
 			return ResponseEntity.ok(cozinha);
 		}
 		// return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		return ResponseEntity.notFound().build();// Atalho para linha acima
-		
+
 		// return ResponseEntity.status(HttpStatus.OK).body(cozinha);
-		// return ResponseEntity.ok(cozinha);// Esta linha é um atalho para a linha acima
-		/*
-		/**
-		 * Exemplo de status 302
-		 */
+		// return ResponseEntity.ok(cozinha);// Esta linha é um atalho para a linha
+		// acima
+		 /** Exemplo de status 302 */
 		/*HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.LOCATION, "http://api.algafood.local:8080/cozinhas");
 		return ResponseEntity
@@ -64,17 +67,18 @@ public class CozinhaController {
 						.headers(headers)
 						.build();*/
 	}
-	
+
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public Cozinha adicionar(@RequestBody Cozinha cozinha) {
-		return cozinhaRepository.salvar(cozinha);
+		return cadastroCozinha.salvar(cozinha);
 	}
-	// @RequestBody Indica para o framework pegar o corpo da requisiçào e atribuir a classe indicada
+	// @RequestBody Indica para o framework pegar o corpo da requisiçào e atribuir a
+	// classe indicada
 	
-	@PutMapping("/{cozinhaId}")//Anotação para update no serviço solicitado
+	@PutMapping("/{cozinhaId}") // Anotação para update no serviço solicitado
 	public ResponseEntity<Cozinha> atualizar(@PathVariable Long cozinhaId,
-			@RequestBody Cozinha cozinha) {
+											 @RequestBody Cozinha cozinha) {
 		Cozinha cozinhaAtual = cozinhaRepository.buscar(cozinhaId);
 
 		if (cozinhaAtual != null) {
@@ -83,6 +87,7 @@ public class CozinhaController {
 																	// vc seta cada propriedade individualmente, com
 																	// este metodo vc copia as propriedades recebidas
 																	// para persistencia.
+
 			// Passando id como parametro no método acima, ele é ignorado na copia dos
 			// dados. Pode ser feito com qualquer atributo.
 			cozinhaRepository.salvar(cozinhaAtual);
