@@ -1,11 +1,9 @@
 package com.algaworks.algafood.api.controller;
 
-
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +18,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algafood.api.model.CozinhasXmlWrapper;
+import com.algaworks.algafood.domain.exception.EntidadeEmUsoException;
+import com.algaworks.algafood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.model.Cozinha;
 import com.algaworks.algafood.domain.repository.CozinhaRepository;
 import com.algaworks.algafood.domain.service.CadastroCozinhaService;
@@ -59,13 +59,12 @@ public class CozinhaController {
 		// return ResponseEntity.status(HttpStatus.OK).body(cozinha);
 		// return ResponseEntity.ok(cozinha);// Esta linha é um atalho para a linha
 		// acima
-		 /** Exemplo de status 302 */
-		/*HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.LOCATION, "http://api.algafood.local:8080/cozinhas");
-		return ResponseEntity
-						.status(HttpStatus.FOUND)
-						.headers(headers)
-						.build();*/
+		/** Exemplo de status 302 */
+		/*
+		 * HttpHeaders headers = new HttpHeaders(); headers.add(HttpHeaders.LOCATION,
+		 * "http://api.algafood.local:8080/cozinhas"); return ResponseEntity
+		 * .status(HttpStatus.FOUND) .headers(headers) .build();
+		 */
 	}
 
 	@PostMapping
@@ -75,10 +74,9 @@ public class CozinhaController {
 	}
 	// @RequestBody Indica para o framework pegar o corpo da requisiçào e atribuir a
 	// classe indicada
-	
+
 	@PutMapping("/{cozinhaId}") // Anotação para update no serviço solicitado
-	public ResponseEntity<Cozinha> atualizar(@PathVariable Long cozinhaId,
-											 @RequestBody Cozinha cozinha) {
+	public ResponseEntity<Cozinha> atualizar(@PathVariable Long cozinhaId, @RequestBody Cozinha cozinha) {
 		Cozinha cozinhaAtual = cozinhaRepository.buscar(cozinhaId);
 
 		if (cozinhaAtual != null) {
@@ -96,24 +94,16 @@ public class CozinhaController {
 
 		return ResponseEntity.notFound().build();
 	}
-	
+
 	@DeleteMapping("/{cozinhaId}")
 	public ResponseEntity<Cozinha> remover(@PathVariable Long cozinhaId) {
-		Cozinha cozinha = cozinhaRepository.buscar(cozinhaId);
-
 		try {
-			if (cozinha != null) {
-				cozinhaRepository.remover(cozinha);
-
-				// return ResponseEntity.status(HttpStatus.NO_CONTENT);//HttpStatus.NO_CONTENT
-				// Indica que deu tudo certo mas não retorna nenhum conteúdo. Apenas o status
-				// indicando sucesso.
-				return ResponseEntity.noContent().build();// Atalho para a linha acima
-			}
-
+			cadastroCozinha.excluir(cozinhaId);
+			return ResponseEntity.noContent().build();
+		} catch (EntidadeNaoEncontradaException e) {
 			return ResponseEntity.notFound().build();
-		} catch (DataIntegrityViolationException e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).build();//
+		} catch (EntidadeEmUsoException e) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
 		}
 	}
 
