@@ -10,9 +10,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonRootName;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+@JsonRootName("restaurante")
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
@@ -23,6 +26,7 @@ public class Restaurante {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Column(nullable = false)
 	private String nome;
 
 	@Column(name = "taxa_frete", nullable = false)
