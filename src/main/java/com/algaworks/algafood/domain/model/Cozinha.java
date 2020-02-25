@@ -22,8 +22,6 @@ public class Cozinha {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	// @JsonIgnore // Anotação responsável para retirar o item da listagens de retorno da API
-	// @JsonProperty("titulo") // Anotação responsável para definir o nome do item da listagens de retorno da API
 	@Column(nullable = false)
 	private String nome;
 
